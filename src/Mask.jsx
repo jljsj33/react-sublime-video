@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 
 const startButton = 'M-10 -15 L15 0 L-10 15 L-10 0Z M-10 -15 15 0 L-10 15 L-10 0Z';
-const pauseButton = 'M-12 -15 L-3 -15 L-3 15 L-12 15Z M3 -15 12 -15 L12 15 L3 15Z';
+// const pauseButton = 'M-12 -15 L-3 -15 L-3 15 L-12 15Z M3 -15 12 -15 L12 15 L3 15Z';
 
 const maskStyle = {
   position: 'absolute',
@@ -36,7 +36,7 @@ export default class Mask extends React.Component {
 
   handleClick() {
     const visible = this.state.visible;
-    this.setState({ visible: !visible});
+    this.setState({ visible: !visible });
     this.props.onClick(visible);
   }
 

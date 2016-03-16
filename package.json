@@ -5,6 +5,7 @@
   "main": "./lib/index.js",
   "scripts": {
     "start": "rc-tools run server",
+    "lint": "rc-tools run lint",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "config": {

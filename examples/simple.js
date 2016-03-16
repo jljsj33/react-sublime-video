@@ -12,14 +12,18 @@ const style = {
 ReactDOM.render(
   <div>
     <SublimeVideo autoPlay loop style={style}
-      src="https://os.alipayobjects.com/rmsportal/FqkQMyFqNqielOw.mp4" />
+      src="https://os.alipayobjects.com/rmsportal/FqkQMyFqNqielOw.mp4"
+    />
     <SublimeVideo loop style={style}
-      src="https://os.alipayobjects.com/rmsportal/FqkQMyFqNqielOw.mp4" />
+      src="https://os.alipayobjects.com/rmsportal/FqkQMyFqNqielOw.mp4"
+    />
     <SublimeVideo style={style}
-      src="https://os.alipayobjects.com/rmsportal/FqkQMyFqNqielOw.mp4" />
+      src="https://os.alipayobjects.com/rmsportal/FqkQMyFqNqielOw.mp4"
+    />
     <SublimeVideo style={style}>
       <Source type="video/mp4"
-        src="https://os.alipayobjects.com/rmsportal/FqkQMyFqNqielOw.mp4" />
+        src="https://os.alipayobjects.com/rmsportal/FqkQMyFqNqielOw.mp4"
+      />
     </SublimeVideo>
   </div>
   , document.getElementById('__react-content'));

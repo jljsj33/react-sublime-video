@@ -30,12 +30,13 @@ export default class SublimeVideo extends React.Component {
   render() {
     const { style, autoPlay, children, ...rest } = this.props;
     return (
-      <section style={{...wrapperStyle, ...style}}>
+      <section style={{ ...wrapperStyle, ...style }}>
         <video ref="video" {...rest} autoPlay={autoPlay} style={videoStyle}>
           { children }
         </video>
         <Mask defaultVisible={!autoPlay}
-          onClick={this.handleMaskClick} />
+          onClick={this.handleMaskClick}
+        />
       </section>
     );
   }
@@ -44,6 +45,8 @@ export default class SublimeVideo extends React.Component {
 SublimeVideo.propTypes = {
   autoPlay: PropTypes.bool,
   loop: PropTypes.bool,
+  style: PropTypes.object,
+  children: PropTypes.object,
 };
 
 SublimeVideo.Source = Source;
