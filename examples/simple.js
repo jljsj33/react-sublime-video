@@ -19714,12 +19714,12 @@ webpackJsonp([0,1],[
 	
 	  _createClass(SublimeVideo, [{
 	    key: 'handleMaskClick',
-	    value: function handleMaskClick(playing) {
+	    value: function handleMaskClick(shouldPlay) {
 	      var video = _reactDom2.default.findDOMNode(this.refs.video);
-	      if (playing) {
+	      if (shouldPlay) {
 	        setTimeout(function () {
 	          return video.play();
-	        }, 600);
+	        }, 300);
 	      } else {
 	        video.pause();
 	      }
@@ -19757,7 +19757,6 @@ webpackJsonp([0,1],[
 	
 	SublimeVideo.propTypes = {
 	  autoPlay: _react.PropTypes.bool,
-	  loop: _react.PropTypes.bool,
 	  style: _react.PropTypes.object,
 	  children: _react.PropTypes.object
 	};
@@ -19791,9 +19790,6 @@ webpackJsonp([0,1],[
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var startButton = 'M-10 -15 L15 0 L-10 15 L-10 0Z M-10 -15 15 0 L-10 15 L-10 0Z';
-	// const pauseButton = 'M-12 -15 L-3 -15 L-3 15 L-12 15Z M3 -15 12 -15 L12 15 L3 15Z';
-	
 	var maskStyle = {
 	  position: 'absolute',
 	  top: 0,
@@ -19802,7 +19798,7 @@ webpackJsonp([0,1],[
 	  height: '100%',
 	  backgroundColor: 'rgba(0, 0, 0, 0.35)',
 	  cursor: 'pointer',
-	  transition: 'opacity 0.6s ease'
+	  transition: 'opacity 0.3s ease'
 	};
 	
 	var buttonStyle = {
@@ -19811,7 +19807,45 @@ webpackJsonp([0,1],[
 	  left: '50%',
 	  width: 60,
 	  height: 60,
-	  margin: -30
+	  margin: -30,
+	  borderRadius: 30,
+	  backgroundColor: '#fff'
+	};
+	
+	var commonBarStyle = {
+	  position: 'absolute',
+	  backgroundColor: 'rgba(153, 153, 153, 0.35)',
+	  width: 4,
+	  borderRadius: 2,
+	  transition: 'all 0.3s cubic-bezier(0, 0, 0.1, 1)'
+	};
+	
+	var startButton = {
+	  leftBar: {
+	    left: 28,
+	    top: 15,
+	    height: 20,
+	    transform: 'rotate(-45deg)'
+	  },
+	  rightBar: {
+	    left: 28,
+	    top: 28,
+	    height: 23,
+	    transform: 'rotate(45deg)'
+	  }
+	};
+	
+	var pauseButton = {
+	  leftBar: {
+	    left: 20,
+	    top: 15,
+	    height: 30
+	  },
+	  rightBar: {
+	    left: 36,
+	    top: 15,
+	    height: 30
+	  }
 	};
 	
 	var Mask = function (_React$Component) {
@@ -19834,8 +19868,25 @@ webpackJsonp([0,1],[
 	    key: 'handleClick',
 	    value: function handleClick() {
 	      var visible = this.state.visible;
-	      this.setState({ visible: !visible });
-	      this.props.onClick(visible);
+	      this.setState({
+	        visible: !visible
+	      });
+	
+	      // If mask is visible now, the video is going to play. Otherwise...
+	      var shouldPlay = visible;
+	      this.props.onClick(shouldPlay);
+	    }
+	  }, {
+	    key: 'getLeftBarStyle',
+	    value: function getLeftBarStyle() {
+	      var style = this.state.visible ? startButton.leftBar : pauseButton.leftBar;
+	      return _extends({}, commonBarStyle, style);
+	    }
+	  }, {
+	    key: 'getRightBarStyle',
+	    value: function getRightBarStyle() {
+	      var style = this.state.visible ? startButton.rightBar : pauseButton.rightBar;
+	      return _extends({}, commonBarStyle, style);
 	    }
 	  }, {
 	    key: 'render',
@@ -19848,14 +19899,10 @@ webpackJsonp([0,1],[
 	        'section',
 	        { style: style, onClick: this.handleClick },
 	        _react2.default.createElement(
-	          'svg',
+	          'div',
 	          { style: buttonStyle },
-	          _react2.default.createElement(
-	            'g',
-	            { transform: 'matrix(1, 0, 0, 1, 30, 30)' },
-	            _react2.default.createElement('circle', { r: '30', fill: '#fff' }),
-	            _react2.default.createElement('path', { d: startButton, fill: '#999' })
-	          )
+	          _react2.default.createElement('div', { style: this.getLeftBarStyle(), ref: 'leftBar' }),
+	          _react2.default.createElement('div', { style: this.getRightBarStyle(), ref: 'rightBar' })
 	        )
 	      );
 	    }
