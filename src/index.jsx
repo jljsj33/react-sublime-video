@@ -18,10 +18,10 @@ export default class SublimeVideo extends React.Component {
     this.handleMaskClick = this.handleMaskClick.bind(this);
   }
 
-  handleMaskClick(playing) {
+  handleMaskClick(shouldPlay) {
     const video = ReactDOM.findDOMNode(this.refs.video);
-    if (playing) {
-      setTimeout(() => video.play(), 600);
+    if (shouldPlay) {
+      setTimeout(() => video.play(), 300);
     } else {
       video.pause();
     }
@@ -44,7 +44,6 @@ export default class SublimeVideo extends React.Component {
 
 SublimeVideo.propTypes = {
   autoPlay: PropTypes.bool,
-  loop: PropTypes.bool,
   style: PropTypes.object,
   children: PropTypes.object,
 };

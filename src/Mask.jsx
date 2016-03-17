@@ -1,8 +1,5 @@
 import React, { PropTypes } from 'react';
 
-const startButton = 'M-10 -15 L15 0 L-10 15 L-10 0Z M-10 -15 15 0 L-10 15 L-10 0Z';
-// const pauseButton = 'M-12 -15 L-3 -15 L-3 15 L-12 15Z M3 -15 12 -15 L12 15 L3 15Z';
-
 const maskStyle = {
   position: 'absolute',
   top: 0,
@@ -11,7 +8,7 @@ const maskStyle = {
   height: '100%',
   backgroundColor: 'rgba(0, 0, 0, 0.35)',
   cursor: 'pointer',
-  transition: 'opacity 0.6s ease',
+  transition: 'opacity 0.3s ease',
 };
 
 const buttonStyle = {
@@ -21,6 +18,44 @@ const buttonStyle = {
   width: 60,
   height: 60,
   margin: -30,
+  borderRadius: 30,
+  backgroundColor: '#fff',
+};
+
+const commonBarStyle = {
+  position: 'absolute',
+  backgroundColor: 'rgba(153, 153, 153, 0.35)',
+  width: 4,
+  borderRadius: 2,
+  transition: 'all 0.3s cubic-bezier(0, 0, 0.1, 1)',
+};
+
+const startButton = {
+  leftBar: {
+    left: 28,
+    top: 15,
+    height: 20,
+    transform: 'rotate(-45deg)',
+  },
+  rightBar: {
+    left: 28,
+    top: 28,
+    height: 23,
+    transform: 'rotate(45deg)'
+  },
+};
+
+const pauseButton = {
+  leftBar: {
+    left: 20,
+    top: 15,
+    height: 30,
+  },
+  rightBar: {
+    left: 36,
+    top: 15,
+    height: 30,
+  },
 };
 
 export default class Mask extends React.Component {
@@ -36,8 +71,23 @@ export default class Mask extends React.Component {
 
   handleClick() {
     const visible = this.state.visible;
-    this.setState({ visible: !visible });
-    this.props.onClick(visible);
+    this.setState({
+      visible: !visible
+    });
+
+    // If mask is visible now, the video is going to play. Otherwise...
+    const shouldPlay = visible;
+    this.props.onClick(shouldPlay);
+  }
+
+  getLeftBarStyle() {
+    const style = this.state.visible ? startButton.leftBar : pauseButton.leftBar
+    return { ...commonBarStyle, ...style };
+  }
+
+  getRightBarStyle() {
+    const style = this.state.visible ? startButton.rightBar : pauseButton.rightBar;
+    return { ...commonBarStyle, ...style };
   }
 
   render() {
@@ -48,12 +98,10 @@ export default class Mask extends React.Component {
 
     return (
       <section style={style} onClick={this.handleClick}>
-        <svg style={buttonStyle}>
-          <g transform="matrix(1, 0, 0, 1, 30, 30)">
-            <circle r="30" fill="#fff" />
-            <path d={startButton} fill="#999" />
-          </g>
-        </svg>
+        <div style={buttonStyle}>
+          <div style={this.getLeftBarStyle()} ref="leftBar" />
+          <div style={this.getRightBarStyle()} ref="rightBar" />
+        </div>
       </section>
     );
   }
