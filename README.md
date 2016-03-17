@@ -23,7 +23,13 @@ ReactDOM.render(
 
 ## API
 
+### SublimeVideo
+
 The same as native `<video />`, see: [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video).
+
+### SublimeVidoe.Source
+
+The same as native `<source />`, see: [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source).
 
 ## Liscense
 
