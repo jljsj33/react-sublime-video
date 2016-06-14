@@ -1,5 +1,9 @@
 # react-sublime-video
 
+[![npm package](https://img.shields.io/npm/v/react-sublime-video.svg?style=flat-square)](https://www.npmjs.org/package/react-sublime-video)
+[![NPM downloads](http://img.shields.io/npm/dm/react-sublime-video.svg?style=flat-square)](https://npmjs.org/package/react-sublime-video)
+[![Dependency Status](https://david-dm.org/benjycui/react-sublime-video.svg?style=flat-square)](https://david-dm.org/benjycui/react-sublime-video)
+
 A sublime video player in React.
 
 # Installation
