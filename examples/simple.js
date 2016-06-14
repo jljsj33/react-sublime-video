@@ -202,12 +202,40 @@ webpackJsonp([0,1],[
 	// shim for using process in browser
 	
 	var process = module.exports = {};
+	
+	// cached from whatever global is present so that test runners that stub it
+	// don't break things.  But we need to wrap it in a try catch in case it is
+	// wrapped in strict mode code which doesn't define any globals.  It's inside a
+	// function because try/catches deoptimize in certain engines.
+	
+	var cachedSetTimeout;
+	var cachedClearTimeout;
+	
+	(function () {
+	  try {
+	    cachedSetTimeout = setTimeout;
+	  } catch (e) {
+	    cachedSetTimeout = function () {
+	      throw new Error('setTimeout is not defined');
+	    }
+	  }
+	  try {
+	    cachedClearTimeout = clearTimeout;
+	  } catch (e) {
+	    cachedClearTimeout = function () {
+	      throw new Error('clearTimeout is not defined');
+	    }
+	  }
+	} ())
 	var queue = [];
 	var draining = false;
 	var currentQueue;
 	var queueIndex = -1;
 	
 	function cleanUpNextTick() {
+	    if (!draining || !currentQueue) {
+	        return;
+	    }
 	    draining = false;
 	    if (currentQueue.length) {
 	        queue = currentQueue.concat(queue);
@@ -223,7 +251,7 @@ webpackJsonp([0,1],[
 	    if (draining) {
 	        return;
 	    }
-	    var timeout = setTimeout(cleanUpNextTick);
+	    var timeout = cachedSetTimeout(cleanUpNextTick);
 	    draining = true;
 	
 	    var len = queue.length;
@@ -240,7 +268,7 @@ webpackJsonp([0,1],[
 	    }
 	    currentQueue = null;
 	    draining = false;
-	    clearTimeout(timeout);
+	    cachedClearTimeout(timeout);
 	}
 	
 	process.nextTick = function (fun) {
@@ -252,7 +280,7 @@ webpackJsonp([0,1],[
 	    }
 	    queue.push(new Item(fun, args));
 	    if (queue.length === 1 && !draining) {
-	        setTimeout(drainQueue, 0);
+	        cachedSetTimeout(drainQueue, 0);
 	    }
 	};
 	
@@ -7942,6 +7970,10 @@ webpackJsonp([0,1],[
 	  }
 	};
 	
+	function registerNullComponentID() {
+	  ReactEmptyComponentRegistry.registerNullComponentID(this._rootNodeID);
+	}
+	
 	var ReactEmptyComponent = function (instantiate) {
 	  this._currentElement = null;
 	  this._rootNodeID = null;
@@ -7950,7 +7982,7 @@ webpackJsonp([0,1],[
 	assign(ReactEmptyComponent.prototype, {
 	  construct: function (element) {},
 	  mountComponent: function (rootID, transaction, context) {
-	    ReactEmptyComponentRegistry.registerNullComponentID(rootID);
+	    transaction.getReactMountReady().enqueue(registerNullComponentID, this);
 	    this._rootNodeID = rootID;
 	    return ReactReconciler.mountComponent(this._renderedComponent, rootID, transaction, context);
 	  },
@@ -18673,7 +18705,7 @@ webpackJsonp([0,1],[
 	
 	'use strict';
 	
-	module.exports = '0.14.7';
+	module.exports = '0.14.8';
 
 /***/ },
 /* 148 */
@@ -19664,8 +19696,6 @@ webpackJsonp([0,1],[
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
 	var _react = __webpack_require__(2);
 	
 	var _react2 = _interopRequireDefault(_react);
@@ -19684,13 +19714,15 @@ webpackJsonp([0,1],[
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	function _defaults(obj, defaults) { var keys = Object.getOwnPropertyNames(defaults); for (var i = 0; i < keys.length; i++) { var key = keys[i]; var value = Object.getOwnPropertyDescriptor(defaults, key); if (value && value.configurable && obj[key] === undefined) { Object.defineProperty(obj, key, value); } } return obj; }
+	
 	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : _defaults(subClass, superClass); }
 	
 	var wrapperStyle = {
 	  position: 'relative'
@@ -19706,48 +19738,44 @@ webpackJsonp([0,1],[
 	  function SublimeVideo(props) {
 	    _classCallCheck(this, SublimeVideo);
 	
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SublimeVideo).call(this, props));
+	    var _this = _possibleConstructorReturn(this, _React$Component.call(this, props));
 	
 	    _this.handleMaskClick = _this.handleMaskClick.bind(_this);
 	    return _this;
 	  }
 	
-	  _createClass(SublimeVideo, [{
-	    key: 'handleMaskClick',
-	    value: function handleMaskClick(shouldPlay) {
-	      var video = _reactDom2.default.findDOMNode(this.refs.video);
-	      if (shouldPlay) {
-	        setTimeout(function () {
-	          return video.play();
-	        }, 300);
-	      } else {
-	        video.pause();
-	      }
+	  SublimeVideo.prototype.handleMaskClick = function handleMaskClick(shouldPlay) {
+	    var video = _reactDom2.default.findDOMNode(this.refs.video);
+	    if (shouldPlay) {
+	      setTimeout(function () {
+	        return video.play();
+	      }, 300);
+	    } else {
+	      video.pause();
 	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var style = _props.style;
-	      var autoPlay = _props.autoPlay;
-	      var children = _props.children;
+	  };
 	
-	      var rest = _objectWithoutProperties(_props, ['style', 'autoPlay', 'children']);
+	  SublimeVideo.prototype.render = function render() {
+	    var _props = this.props;
+	    var style = _props.style;
+	    var autoPlay = _props.autoPlay;
+	    var children = _props.children;
 	
-	      return _react2.default.createElement(
-	        'section',
-	        { style: _extends({}, wrapperStyle, style) },
-	        _react2.default.createElement(
-	          'video',
-	          _extends({ ref: 'video' }, rest, { autoPlay: autoPlay, style: videoStyle }),
-	          children
-	        ),
-	        _react2.default.createElement(_Mask2.default, { defaultVisible: !autoPlay,
-	          onClick: this.handleMaskClick
-	        })
-	      );
-	    }
-	  }]);
+	    var rest = _objectWithoutProperties(_props, ['style', 'autoPlay', 'children']);
+	
+	    return _react2.default.createElement(
+	      'section',
+	      { style: _extends({}, wrapperStyle, style) },
+	      _react2.default.createElement(
+	        'video',
+	        _extends({ ref: 'video' }, rest, { autoPlay: autoPlay, style: videoStyle }),
+	        children
+	      ),
+	      _react2.default.createElement(_Mask2.default, { defaultVisible: !autoPlay,
+	        onClick: this.handleMaskClick
+	      })
+	    );
+	  };
 	
 	  return SublimeVideo;
 	}(_react2.default.Component);
@@ -19776,19 +19804,19 @@ webpackJsonp([0,1],[
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
 	var _react = __webpack_require__(2);
 	
 	var _react2 = _interopRequireDefault(_react);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	function _defaults(obj, defaults) { var keys = Object.getOwnPropertyNames(defaults); for (var i = 0; i < keys.length; i++) { var key = keys[i]; var value = Object.getOwnPropertyDescriptor(defaults, key); if (value && value.configurable && obj[key] === undefined) { Object.defineProperty(obj, key, value); } } return obj; }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : _defaults(subClass, superClass); }
 	
 	var maskStyle = {
 	  position: 'absolute',
@@ -19814,24 +19842,24 @@ webpackJsonp([0,1],[
 	
 	var commonBarStyle = {
 	  position: 'absolute',
-	  backgroundColor: 'rgba(153, 153, 153, 0.35)',
-	  width: 4,
-	  borderRadius: 2,
-	  transition: 'all 0.3s cubic-bezier(0, 0, 0.1, 1)'
+	  width: 0,
+	  height: 0,
+	  borderStyle: 'solid',
+	  transition: 'all 0.4s cubic-bezier(0, 0, 0.1, 1)'
 	};
 	
 	var startButton = {
 	  leftBar: {
-	    left: 28,
+	    left: 21,
 	    top: 15,
-	    height: 20,
-	    transform: 'rotate(-45deg)'
+	    borderWidth: '15px 0 0 25px',
+	    borderColor: 'transparent transparent transparent #999'
 	  },
 	  rightBar: {
-	    left: 28,
-	    top: 28,
-	    height: 23,
-	    transform: 'rotate(45deg)'
+	    left: 21,
+	    top: 30,
+	    borderWidth: '15px 25px 0 0',
+	    borderColor: '#999 transparent transparent transparent'
 	  }
 	};
 	
@@ -19854,7 +19882,7 @@ webpackJsonp([0,1],[
 	  function Mask(props) {
 	    _classCallCheck(this, Mask);
 	
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Mask).call(this, props));
+	    var _this = _possibleConstructorReturn(this, _React$Component.call(this, props));
 	
 	    _this.state = {
 	      visible: props.defaultVisible
@@ -19864,49 +19892,43 @@ webpackJsonp([0,1],[
 	    return _this;
 	  }
 	
-	  _createClass(Mask, [{
-	    key: 'handleClick',
-	    value: function handleClick() {
-	      var visible = this.state.visible;
-	      this.setState({
-	        visible: !visible
-	      });
+	  Mask.prototype.handleClick = function handleClick() {
+	    var visible = this.state.visible;
+	    this.setState({
+	      visible: !visible
+	    });
 	
-	      // If mask is visible now, the video is going to play. Otherwise...
-	      var shouldPlay = visible;
-	      this.props.onClick(shouldPlay);
-	    }
-	  }, {
-	    key: 'getLeftBarStyle',
-	    value: function getLeftBarStyle() {
-	      var style = this.state.visible ? startButton.leftBar : pauseButton.leftBar;
-	      return _extends({}, commonBarStyle, style);
-	    }
-	  }, {
-	    key: 'getRightBarStyle',
-	    value: function getRightBarStyle() {
-	      var style = this.state.visible ? startButton.rightBar : pauseButton.rightBar;
-	      return _extends({}, commonBarStyle, style);
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var style = _extends({}, maskStyle, {
-	        opacity: this.state.visible ? 1 : 0
-	      });
+	    // If mask is visible now, the video is going to play. Otherwise...
+	    var shouldPlay = visible;
+	    this.props.onClick(shouldPlay);
+	  };
 	
-	      return _react2.default.createElement(
-	        'section',
-	        { style: style, onClick: this.handleClick },
-	        _react2.default.createElement(
-	          'div',
-	          { style: buttonStyle },
-	          _react2.default.createElement('div', { style: this.getLeftBarStyle(), ref: 'leftBar' }),
-	          _react2.default.createElement('div', { style: this.getRightBarStyle(), ref: 'rightBar' })
-	        )
-	      );
-	    }
-	  }]);
+	  Mask.prototype.getLeftBarStyle = function getLeftBarStyle() {
+	    var style = this.state.visible ? startButton.leftBar : pauseButton.leftBar;
+	    return _extends({}, commonBarStyle, style);
+	  };
+	
+	  Mask.prototype.getRightBarStyle = function getRightBarStyle() {
+	    var style = this.state.visible ? startButton.rightBar : pauseButton.rightBar;
+	    return _extends({}, commonBarStyle, style);
+	  };
+	
+	  Mask.prototype.render = function render() {
+	    var style = _extends({}, maskStyle, {
+	      opacity: this.state.visible ? 1 : 0
+	    });
+	
+	    return _react2.default.createElement(
+	      'section',
+	      { style: style, onClick: this.handleClick },
+	      _react2.default.createElement(
+	        'div',
+	        { style: buttonStyle },
+	        _react2.default.createElement('div', { style: this.getLeftBarStyle(), ref: 'leftBar' }),
+	        _react2.default.createElement('div', { style: this.getRightBarStyle(), ref: 'rightBar' })
+	      )
+	    );
+	  };
 	
 	  return Mask;
 	}(_react2.default.Component);
