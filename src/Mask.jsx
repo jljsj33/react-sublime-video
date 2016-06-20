@@ -32,17 +32,6 @@ export default class Mask extends React.Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick () {
-    const visible = this.state.visible;
-    this.setState({
-      visible: !visible,
-    });
-
-    // If mask is visible now, the video is going to play. Otherwise...
-    const shouldPlay = visible;
-    this.props.onClick(shouldPlay);
-  }
-
   getAnimation() {
     return this.state.visible ?
       [
@@ -61,22 +50,35 @@ export default class Mask extends React.Component {
         d="M20 15L20 45L45 30Z"
         fill="#999"
         key="a0"
-        style={{ transformOrigin: '30px 30px' }}
+        style={{ transformOrigin: '30px 30px', transform: 'rotate(90deg)' }}
       />, <path
         d="M20 15L20 45L45 30Z"
         fill="#999"
         key="a1"
-        style={{ transformOrigin: '30px 30px' }}
+        style={{ transformOrigin: '30px 30px', transform: 'rotate(90deg)' }}
       />] :
       [<path
+        d="M15 18L15 27L45 27L45 18Z"
         fill="#999"
         key="b0"
-        style={{ transformOrigin: '30px 30px' }}
+        style={{ transformOrigin: '30px 30px', transform: 'rotate(90deg)' }}
       />, <path
+        d="M15 33L15 42L45 42L45 33Z"
         fill="#999"
         key="b1"
-        style={{ transformOrigin: '30px 30px' }}
+        style={{ transformOrigin: '30px 30px', transform: 'rotate(90deg)' }}
       />];
+  }
+
+  handleClick() {
+    const visible = this.state.visible;
+    this.setState({
+      visible: !visible,
+    });
+
+    // If mask is visible now, the video is going to play. Otherwise...
+    const shouldPlay = visible;
+    this.props.onClick(shouldPlay);
   }
 
   render() {
