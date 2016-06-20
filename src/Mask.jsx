@@ -32,10 +32,10 @@ export default class Mask extends React.Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick() {
+  handleClick () {
     const visible = this.state.visible;
     this.setState({
-      visible: !visible
+      visible: !visible,
     });
 
     // If mask is visible now, the video is going to play. Otherwise...
@@ -52,7 +52,7 @@ export default class Mask extends React.Component {
       [
         { d: 'M15 18L15 27L45 27L45 18Z', style: { rotate: 90 } },
         { d: 'M15 33L15 42L45 42L45 33Z', style: { rotate: 90 } },
-      ]
+      ];
   }
 
   getIconChildren() {
