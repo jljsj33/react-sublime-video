@@ -35,12 +35,36 @@ export default class Mask extends React.Component {
   getAnimation() {
     return this.state.visible ?
       [
-        { d: 'M20 15L20 45L45 30Z', style: { rotate: 0 }, delay: 150 },
-        { d: 'M20 15L20 45L45 30Z', style: { rotate: 0 }, delay: 150 },
+        [
+          { style: { rotate: 90 }, duration: 0 },
+          {
+            d: 'M20 15L20 45L45 30Z', style: { rotate: 0 },
+            delay: 150, duration: 300, ease: 'easeOutQuint',
+          },
+        ],
+        [
+          { style: { rotate: 90 }, duration: 0 },
+          {
+            d: 'M20 15L20 45L45 30Z', style: { rotate: 0 },
+            delay: 150, duration: 300, ease: 'easeOutQuint',
+          },
+        ],
       ] :
       [
-        { d: 'M15 18L15 27L45 27L45 18Z', style: { rotate: 90 } },
-        { d: 'M15 33L15 42L45 42L45 33Z', style: { rotate: 90 } },
+        [
+          { style: { rotate: 0 }, duration: 0 },
+          {
+            d: 'M15 18L15 27L45 27L45 18Z', style: { rotate: 90 },
+            duration: 300, ease: 'easeOutQuint',
+          },
+        ],
+        [
+          { style: { rotate: 0 }, duration: 0 },
+          {
+            d: 'M15 33L15 42L45 42L45 33Z', style: { rotate: 90 },
+            duration: 300, ease: 'easeOutQuint',
+          },
+        ],
       ];
   }
 
@@ -50,23 +74,23 @@ export default class Mask extends React.Component {
         d="M20 15L20 45L45 30Z"
         fill="#999"
         key="a0"
-        style={{ transformOrigin: '30px 30px', transform: 'rotate(90deg)' }}
+        style={{ transformOrigin: '30px 30px' }}
       />, <path
         d="M20 15L20 45L45 30Z"
         fill="#999"
         key="a1"
-        style={{ transformOrigin: '30px 30px', transform: 'rotate(90deg)' }}
+        style={{ transformOrigin: '30px 30px' }}
       />] :
       [<path
         d="M15 18L15 27L45 27L45 18Z"
         fill="#999"
         key="b0"
-        style={{ transformOrigin: '30px 30px', transform: 'rotate(90deg)' }}
+        style={{ transformOrigin: '30px 30px' }}
       />, <path
         d="M15 33L15 42L45 42L45 33Z"
         fill="#999"
         key="b1"
-        style={{ transformOrigin: '30px 30px', transform: 'rotate(90deg)' }}
+        style={{ transformOrigin: '30px 30px' }}
       />];
   }
 
@@ -90,9 +114,7 @@ export default class Mask extends React.Component {
         'opacity 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0.2s',
     };
     const children = this.getIconChildren();
-    const animation = this.getAnimation().map(item => {
-      return { ...item, duration: 300, ease: 'easeOutQuint' };
-    });
+    const animation = this.getAnimation();
     return (
       <section style={style} onClick={this.handleClick}>
         <IconSVGAnim style={buttonStyle}
