@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import IconSVGAnim from 'rc-icon-anim/lib/IconSVGAnim';
 
 const maskStyle = {
   position: 'absolute',
@@ -8,55 +9,17 @@ const maskStyle = {
   height: '100%',
   backgroundColor: 'rgba(0, 0, 0, 0.35)',
   cursor: 'pointer',
-  transition: 'opacity 0.3s ease',
 };
 
 const buttonStyle = {
   position: 'absolute',
   top: '50%',
   left: '50%',
-  width: 60,
-  height: 60,
   margin: -30,
   borderRadius: 30,
   backgroundColor: '#fff',
 };
 
-const commonBarStyle = {
-  position: 'absolute',
-  width: 0,
-  height: 0,
-  borderStyle: 'solid',
-  transition: 'all 0.4s cubic-bezier(0, 0, 0.1, 1)',
-};
-
-const startButton = {
-  leftBar: {
-    left: 21,
-    top: 15,
-    borderWidth: '15px 0 0 25px',
-    borderColor: 'transparent transparent transparent #999',
-  },
-  rightBar: {
-    left: 21,
-    top: 30,
-    borderWidth: '15px 25px 0 0',
-    borderColor: '#999 transparent transparent transparent',
-  },
-};
-
-const pauseButton = {
-  leftBar: {
-    left: 20,
-    top: 15,
-    height: 30,
-  },
-  rightBar: {
-    left: 36,
-    top: 15,
-    height: 30,
-  },
-};
 
 export default class Mask extends React.Component {
   constructor(props) {
@@ -80,28 +43,65 @@ export default class Mask extends React.Component {
     this.props.onClick(shouldPlay);
   }
 
-  getLeftBarStyle() {
-    const style = this.state.visible ? startButton.leftBar : pauseButton.leftBar
-    return { ...commonBarStyle, ...style };
+  getAnimation() {
+    return this.state.visible ?
+      [
+        { d: 'M20 15L20 45L45 30Z', style: { rotate: 0 }, delay: 150 },
+        { d: 'M20 15L20 45L45 30Z', style: { rotate: 0 }, delay: 150 },
+      ] :
+      [
+        { d: 'M15 18L15 27L45 27L45 18Z', style: { rotate: 90 } },
+        { d: 'M15 33L15 42L45 42L45 33Z', style: { rotate: 90 } },
+      ]
   }
 
-  getRightBarStyle() {
-    const style = this.state.visible ? startButton.rightBar : pauseButton.rightBar;
-    return { ...commonBarStyle, ...style };
+  getIconChildren() {
+    return this.state.visible ?
+      [<path
+        d="M20 15L20 45L45 30Z"
+        fill="#999"
+        key="a0"
+        style={{ transformOrigin: '30px 30px' }}
+      />, <path
+        d="M20 15L20 45L45 30Z"
+        fill="#999"
+        key="a1"
+        style={{ transformOrigin: '30px 30px' }}
+      />] :
+      [<path
+        fill="#999"
+        key="b0"
+        style={{ transformOrigin: '30px 30px' }}
+      />, <path
+        fill="#999"
+        key="b1"
+        style={{ transformOrigin: '30px 30px' }}
+      />];
   }
 
   render() {
     const style = {
       ...maskStyle,
       opacity: this.state.visible ? 1 : 0,
+      transition: this.state.visible ?
+        'opacity 0.3s cubic-bezier(0.215, 0.61, 0.355, 1)' :
+        'opacity 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0.2s',
     };
-
+    const children = this.getIconChildren();
+    const animation = this.getAnimation().map(item => {
+      return { ...item, duration: 300, ease: 'easeOutQuint' };
+    });
     return (
       <section style={style} onClick={this.handleClick}>
-        <div style={buttonStyle}>
-          <div style={this.getLeftBarStyle()} ref="leftBar" />
-          <div style={this.getRightBarStyle()} ref="rightBar" />
-        </div>
+        <IconSVGAnim style={buttonStyle}
+          viewBox="0 0 60 60"
+          width="60"
+          height="60"
+          appear={false}
+          animation={animation}
+        >
+          {children}
+        </IconSVGAnim>
       </section>
     );
   }
